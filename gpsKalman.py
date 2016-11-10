@@ -47,13 +47,13 @@ R = 0
 # initial state mean
 mu_0 = [-20, 0]
 # initial state covariance
-Sigma_0 = np.eye(2,2)
+Sigma_0 = 40**2 * np.eye(2,2)
 # que cosas optimizar por EM
 # ['transition_matrices',     'observation_matrices', 'transition_offsets',
 # 'observation_offsets',     'transition_covariance', 'observation_covariance',
 # 'initial_state_mean',     'initial_state_covariance'] or 'all'
-em_vars = "all" # ['transition_covariance', 'observation_covariance',
-           #'initial_state_mean',     'initial_state_covariance']
+em_vars = ['transition_covariance', 'observation_covariance',
+           'initial_state_mean',     'initial_state_covariance'] # "all"
 
 # %% defino el filtro
 kf = KalmanFilter(transition_matrices=A,
@@ -63,6 +63,18 @@ kf = KalmanFilter(transition_matrices=A,
                   initial_state_mean=mu_0,
                   initial_state_covariance=Sigma_0,
                   em_vars=em_vars)
+
+# %% filtro son ajustar nada
+
+(filtered_state_means, filtered_state_covariances) = kf.filter(measurementsX)
+(smoothed_state_means, smoothed_state_covariances) = kf.smooth(measurementsX)
+
+plt.figure()
+plt.plot(measurementsX,label="latitud medida")
+plt.plot(filtered_state_means[:,0],label="posicion estimada")
+plt.plot(filtered_state_means[:,1],label="error GPS")
+plt.legend()
+plt.ylabel("latitud")
 
 # %% aplico como en el ejemplo
 kf = kf.em(measurementsX)
@@ -79,4 +91,4 @@ plt.plot(measurementsX,label="latitud medida")
 plt.plot(filtered_state_means[:,0],label="posicion estimada")
 plt.plot(filtered_state_means[:,1],label="error GPS")
 plt.legend()
-
+plt.ylabel("latitud")
